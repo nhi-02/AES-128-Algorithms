@@ -185,19 +185,19 @@ module Cipher(
 				Ciphertext3_r <= D3_ARK_round0_w;
 				valid_r		  <= 0;	
 			end
-			else if(state_in == ROUND10) begin
+			else if(state_in == ROUND1to9) begin // từ ROUND10 thành ROUND1to9
 				Ciphertext0_r <= D0_ARK_round1to9_w;
 				Ciphertext1_r <= D1_ARK_round1to9_w;
 				Ciphertext2_r <= D2_ARK_round1to9_w;
 				Ciphertext3_r <= D3_ARK_round1to9_w;
 				valid_r		  <= 0;	
 			end
-			else begin
+			else if(state_in == ROUND10) begin // từ ROUND1to9 thành ROUND10
 				Ciphertext0_r <= D0_ARK_round10_w;
 				Ciphertext1_r <= D1_ARK_round10_w;
 				Ciphertext2_r <= D2_ARK_round10_w;
 				Ciphertext3_r <= D3_ARK_round10_w;
-				valid_r		  <= 0;	
+				valid_r		  <= 1;	// sửa tham số valid thành 1 để báo kết quả đã thực hiện xong
 			end
 		end
 	end

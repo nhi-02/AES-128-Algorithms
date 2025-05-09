@@ -1,4 +1,4 @@
-// File này có 2 lỗi
+// File này có 2 lỗi (đã sửa)
 
 module RoundConst(
 	input wire [3:0] round,
@@ -16,8 +16,8 @@ module RoundConst(
 	
 	rcon rcon (.S_in(round), .D_out(rcon_w));
 	
-	assign D0_out = rcon_w ^ S1_in;
-	assign D1_out = S0_in;
+	assign D0_out = rcon_w ^ S0_in; // output đầu tiên là XOR với round constant
+	assign D1_out = S1_in; // sửa S0_in thành S1_in
 	assign D2_out = S2_in;
 	assign D3_out = S3_in;
 endmodule

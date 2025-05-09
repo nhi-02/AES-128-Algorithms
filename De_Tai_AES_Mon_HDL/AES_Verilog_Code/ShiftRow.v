@@ -1,4 +1,4 @@
-// Có 2 lỗi trong file này
+// Có 2 lỗi trong file này (đã sửa lại logic)
 
 module ShiftRow(
 	input wire [31:0] S0_in,
@@ -34,30 +34,29 @@ module ShiftRow(
 	assign bytes[15] = S3_in[7:0];
 	
 	
-	assign temp[0] = bytes[0];
-	assign temp[1] = bytes[5];
-	assign temp[2] = bytes[10];
-	assign temp[3] = bytes[15];
-	
-	assign temp[4] = bytes[1];
-	assign temp[5] = bytes[9];
-	assign temp[6] = bytes[14];
-	assign temp[7] = bytes[3];
+    assign temp[0]  = bytes[0];  // State[0][0]
+    assign temp[1]  = bytes[4];  // State[0][1]
+    assign temp[2]  = bytes[8];  // State[0][2]
+    assign temp[3]  = bytes[12]; // State[0][3]
 
-	assign temp[8] = bytes[8];
-	assign temp[9] = bytes[13];
-	assign temp[10] = bytes[2];
-	assign temp[11] = bytes[7];
-	
-	assign temp[12] = bytes[12];
-	assign temp[13] = bytes[0];
-	assign temp[14] = bytes[6];
-	assign temp[15] = bytes[11];	
-	
-	
-	assign D0_out = {temp[0],temp[1],temp[2],temp[3]}; 
-	assign D1_out = {temp[4],temp[5],temp[6],temp[7]}; 
-	assign D2_out = {temp[8],temp[9],temp[10],temp[11]};
-	assign D3_out = {temp[12],temp[13],temp[14],temp[15]}; 
+    assign temp[4]  = bytes[5];  // State[1][1]
+    assign temp[5]  = bytes[9];  // State[1][2]
+    assign temp[6]  = bytes[13]; // State[1][3]
+    assign temp[7]  = bytes[1];  // State[1][0]
+
+    assign temp[8]  = bytes[10]; // State[2][2]
+    assign temp[9]  = bytes[14]; // State[2][3]
+    assign temp[10] = bytes[2];  // State[2][0]
+    assign temp[11] = bytes[6];  // State[2][1]
+
+    assign temp[12] = bytes[15]; // State[3][3]
+    assign temp[13] = bytes[3];  // State[3][0]
+    assign temp[14] = bytes[7];  // State[3][1]
+    assign temp[15] = bytes[11]; // State[3][2]
+
+    assign D0_out = {temp[0], temp[4], temp[8], temp[12]};
+    assign D1_out = {temp[1], temp[5], temp[9], temp[13]};
+    assign D2_out = {temp[2], temp[6], temp[10], temp[14]};
+    assign D3_out = {temp[3], temp[7], temp[11], temp[15]};
 	
 endmodule
