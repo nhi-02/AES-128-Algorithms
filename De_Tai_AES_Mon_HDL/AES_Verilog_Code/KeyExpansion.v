@@ -1,4 +1,4 @@
-// 2 lỗi 
+// File này có 2 lỗi (đã sửa)
 
 module KeyExpansion(
 	input wire 		 	CLK,
@@ -21,7 +21,7 @@ module KeyExpansion(
 	parameter ROUND1to9   	= 2;
 	parameter ROUND10   	= 3;
 	
-	///// Tín hiệu wire 
+	///// Tín hiệu wire
 	wire [31:0] 	w4_w;
 	wire [31:0] 	w5_w;
 	wire [31:0] 	w6_w;
@@ -31,7 +31,7 @@ module KeyExpansion(
 	wire [31:0] 	subword_w;
 	wire [31:0] 	roundconst_w;
 	
-	///// Tín hiệu reg 
+	///// Tín hiệu reg
 	reg [1:0] 	state_r;
 	reg [1:0] 	next_state_r;
 	reg [3:0] 	round_r;
@@ -41,7 +41,7 @@ module KeyExpansion(
 	reg [31:0] 	w2_r;
 	reg [31:0] 	w3_r;
 	
-	///// Mạch tổ hợp 
+	///// Mạch tổ hợp
 	assign key0_out 	= (state_r == IDLE)? 0: (round_r == 0) ? key0_in : w4_w;
 	assign key1_out 	= (state_r == IDLE)? 0: (round_r == 0) ? key1_in : w5_w;
 	assign key2_out 	= (state_r == IDLE)? 0: (round_r == 0) ? key2_in : w6_w;
@@ -82,14 +82,14 @@ module KeyExpansion(
 	.D2_out(roundconst_w[15:8] ),
 	.D3_out(roundconst_w[7:0]  )	
 	);
-	// Sai ở đây 
+	//sai ở đây 
 	// assign w4_w = w1_r ^ roundconst_w;
 	assign w4_w = w0_r ^ roundconst_w;
 	assign w5_w = w4_w ^ w1_r;
 	assign w6_w = w5_w ^ w2_r;
 	assign w7_w = w6_w ^ w3_r;
 	
-	///// Mạch tuần tự 
+	///// Mạch tuần tự
 	
 	always @(posedge CLK or negedge RST) begin
 		if (RST == 0) begin
@@ -105,6 +105,7 @@ module KeyExpansion(
 				w2_r <= 0;
 				w3_r <= 0;			
 			end
+			//lỗi sai ở đây
 			//if(state_r == ROUND0) begin
 			else if(state_r == ROUND0) begin
 				w0_r <= key0_in;
@@ -112,12 +113,19 @@ module KeyExpansion(
 				w2_r <= key2_in;
 				w3_r <= key3_in;
 			end
+			//thêm đoạn này
 			else if(state_r == ROUND1to9 || state_r == ROUND10) begin
     			w0_r <= w4_w;
     			w1_r <= w5_w;
     			w2_r <= w6_w;
     			w3_r <= w7_w;			
 			end
+			// else begin
+			// 	w0_r <= w4_w;
+			// 	w1_r <= w5_w;
+			// 	w2_r <= w6_w;
+			// 	w3_r <= w7_w;			
+			// end
 		end
 	end
 
@@ -126,12 +134,12 @@ module KeyExpansion(
 			round_r <= 0;
 		end
 		else begin
-		if(state_r != IDLE && round_r < 10)
+		if(state_r != IDLE)
 			round_r <= round_r + 1;
 		else
 			round_r <= 0;
 	  end
-	end	  
+	end		  
 	
 	///// Máy trạng thái FSM
 	
@@ -149,10 +157,15 @@ module KeyExpansion(
 		  else
 			next_state_r = ROUND0;
 	   ROUND1to9:
-		  if (round_r > 9)  
-			next_state_r = IDLE;
+		  if (round_r == 9)  
+			next_state_r = ROUND10;
 		  else
 			next_state_r = ROUND1to9;
+	   ROUND10:
+	   	  if (round_r == 10)  
+			next_state_r = IDLE;
+		  else
+			next_state_r = ROUND10;
 		endcase
 	
 	always @(posedge CLK)
