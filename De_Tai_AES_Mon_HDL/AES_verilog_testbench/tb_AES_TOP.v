@@ -52,13 +52,23 @@ module tb_AES_TOP;
     // Clock generator
     initial begin
         CLK = 0;
-        forever #5 CLK = ~CLK; // T?o xung clock 10ns
+        forever #5 CLK = ~CLK; 
+    end
+
+    always @(posedge CLK) begin
+        if (!RST && valid_out) begin
+            final_ciphertext0 <= ciphertext0_out;
+            final_ciphertext1 <= ciphertext1_out;
+            final_ciphertext2 <= ciphertext2_out;
+            final_ciphertext3 <= ciphertext3_out;
+            final_valid <= 1;
+        end
     end
 
     // Test sequence
     initial begin
         // Initialize Inputs
-        RST = 1; // B?t ??u ? tr?ng thái reset
+        RST = 1; 
         start_in = 0;
         plaintext0_in = 32'h54776f20;
         plaintext1_in = 32'h4f6e6520;
@@ -93,9 +103,9 @@ module tb_AES_TOP;
         $finish;
     end
 
-    // *** Phân tích log ***
+ 
     always @(posedge CLK) begin
-        if (RST == 1 && uut.state_w != uut.keyexpansion.IDLE) begin
+            if (RST == 1 && uut.state_w != uut.keyexpansion.IDLE) begin
             $display("------------------------------------");
             $display("Time: %0t ns", $time);
 
@@ -105,40 +115,45 @@ module tb_AES_TOP;
                          plaintext0_in, plaintext1_in, plaintext2_in, plaintext3_in);
                 $display("  Round Key (Key 0):       %h %h %h %h",
                          uut.cipher.key0_in, uut.cipher.key1_in, uut.cipher.key2_in, uut.cipher.key3_in);
-                // kết quả của AddRoundKey vòng 0
+                // k?t qu? c?a AddRoundKey v?ng 0
                 $display("  Output State (Combinational): %h %h %h %h",
                          uut.cipher.D0_ARK_round0_w, uut.cipher.D1_ARK_round0_w,
                          uut.cipher.D2_ARK_round0_w, uut.cipher.D3_ARK_round0_w);
             end else if (uut.cipher.state_in == uut.cipher.ROUND1to9) begin
-                $display("--- Processing Round %0d ---", uut.keyexpansion.round_r); // hiển thị round và keyexpansion
+                $display("--- Processing Round %0d ---", uut.keyexpansion.round_r); 
                 $display("  Input State (From Prev Round): %h %h %h %h",
                          uut.cipher.Ciphertext0_r, uut.cipher.Ciphertext1_r,
                          uut.cipher.Ciphertext2_r, uut.cipher.Ciphertext3_r);
                 $display("  Round Key (Key %0d):         %h %h %h %h", uut.keyexpansion.round_r,
                          uut.cipher.key0_in, uut.cipher.key1_in, uut.cipher.key2_in, uut.cipher.key3_in);
-                // kết quả của SB->SR->MC->ARK vòng 1-9
+                // k?t qu? c?a SB->SR->MC->ARK v?ng 1-9
                 $display("  Output State (Combinational):  %h %h %h %h",
                          uut.cipher.D0_ARK_round1to9_w, uut.cipher.D1_ARK_round1to9_w,
                          uut.cipher.D2_ARK_round1to9_w, uut.cipher.D3_ARK_round1to9_w);
+
             end else if (uut.cipher.state_in == uut.cipher.ROUND10) begin
                  $display("--- Processing Round 10 (Final SB->SR->ARK) ---");
+                
                  $display("  Input State (From Prev Round): %h %h %h %h",
                          uut.cipher.Ciphertext0_r, uut.cipher.Ciphertext1_r,
                          uut.cipher.Ciphertext2_r, uut.cipher.Ciphertext3_r);
+                 
                  $display("  Round Key (Key 10):        %h %h %h %h",
                          uut.cipher.key0_in, uut.cipher.key1_in, uut.cipher.key2_in, uut.cipher.key3_in);
-                 // kết quả của SB->SR->ARK vòng 10
-                 $display("  Output State (Combinational):  %h %h %h %h",
-                         uut.cipher.D0_ARK_round10_w, uut.cipher.D1_ARK_round10_w,
-                         uut.cipher.D2_ARK_round10_w, uut.cipher.D3_ARK_round10_w);
-            end
 
-            //$display("  Next Internal State (Registered): %h %h %h %h",
+                $display("  Output State (Combinational):  %h %h %h %h",
+                    uut.cipher.D0_ARK_round10_w, uut.cipher.D1_ARK_round10_w,
+                    uut.cipher.D2_ARK_round10_w, uut.cipher.D3_ARK_round10_w);
+
+            $display("Round 10 output will be captured in the next cycle");
+            @(posedge CLK);
+
+            $display("  Final Ciphertext (Combinational): %h %h %h %h",
                      uut.cipher.Ciphertext0_r, uut.cipher.Ciphertext1_r,
                      uut.cipher.Ciphertext2_r, uut.cipher.Ciphertext3_r);
             $display("  Current Valid Out: %b", valid_out);
 
-            // bắt giá trị cuối cùng của ciphertext
+
             if (valid_out == 1 && final_valid == 0) begin
                 $display(">>> Capturing final result at time %0t ns <<<", $time);
                 final_ciphertext0 = uut.cipher.Ciphertext0_r; 
@@ -146,8 +161,10 @@ module tb_AES_TOP;
                 final_ciphertext2 = uut.cipher.Ciphertext2_r;
                 final_ciphertext3 = uut.cipher.Ciphertext3_r;
                 final_valid = 1;
-            end
+            
+            end 
         end
     end
+end
 
 endmodule

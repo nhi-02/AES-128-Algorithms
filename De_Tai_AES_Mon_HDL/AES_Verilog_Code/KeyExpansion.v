@@ -113,7 +113,7 @@ module KeyExpansion(
 				w2_r <= key2_in;
 				w3_r <= key3_in;
 			end
-			//thêm đoạn này
+			// thêm đoạn này
 			else if(state_r == ROUND1to9 || state_r == ROUND10) begin
     			w0_r <= w4_w;
     			w1_r <= w5_w;
