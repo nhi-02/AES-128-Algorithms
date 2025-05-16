@@ -645,7 +645,7 @@
 
 
 
-	// Add user logic here
+	// Add user logic here / bắt đầu fix lỗi 
 
 	// Xử lý tín hiệu input
 	
@@ -681,19 +681,19 @@
 				plaintext3_r 	<= S_AXI_WDATA;
 			end		
 			else if (axi_awv_awr_flag && (axi_awaddr == `KEY0_BASE_PHYS)) begin
-				key3_r 			<= S_AXI_WDATA;
+				key0_r 			<= S_AXI_WDATA;
 			end	
 			else if (axi_awv_awr_flag && (axi_awaddr == `KEY1_BASE_PHYS)) begin
-				key2_r 			<= S_AXI_WDATA;
-			end	
-			else if (axi_awv_awr_flag && (axi_awaddr == `KEY2_BASE_PHYS)) begin
 				key1_r 			<= S_AXI_WDATA;
 			end	
+			else if (axi_awv_awr_flag && (axi_awaddr == `KEY2_BASE_PHYS)) begin
+				key2_r 			<= S_AXI_WDATA;
+			end	
 			else if (axi_awv_awr_flag && (axi_awaddr == `KEY3_BASE_PHYS)) begin
-				key0_r 			<= S_AXI_WDATA;
+				key3_r 			<= S_AXI_WDATA;
 			end				
 			else begin
-				start_r			<=	1;
+				start_r			<=	0;
 				plaintext0_r	<=	plaintext0_r;
 				plaintext1_r	<=	plaintext1_r;
 				plaintext2_r	<=	plaintext2_r;
@@ -751,7 +751,7 @@
 				ciphertext3_r	<=	ciphertext3_w;
 			end 			
 			else begin
-				valid_r			<=	valid_r;
+				valid_r			<=	valid_r & ~start_r;
 				ciphertext0_r	<=	ciphertext0_r;
 				ciphertext1_r	<=	ciphertext1_r;
 				ciphertext2_r	<=	ciphertext2_r;
@@ -759,7 +759,7 @@
 			end   
 		end			
 	end  
-		
+	// hết fix lỗi	
 	AES_TOP dut (
         .CLK(S_AXI_ACLK),
         .RST(S_AXI_ARESETN),

@@ -48,7 +48,7 @@ int main() {
     fpga.dma_ctrl = MY_IP_info.dma_mmap;
     membase = (unsigned char*)MY_IP_info.ddr_mmap;
 
-    uint32_t key[4] = {
+    uint32_t key[4] = {  // fix lỗi từ đây đến hết
         0x54686174, 
         0x73206D79, 
         0x204B756E, 
@@ -64,23 +64,20 @@ int main() {
 
     uint32_t output[4];
 	
-	*(MY_IP_info.pio_32_mmap + START_BASE_PHYS) = 1;
-	
-	*(MY_IP_info.pio_32_mmap + KEY3_BASE_PHYS) = key[0];
-	*(MY_IP_info.pio_32_mmap + KEY1_BASE_PHYS) = key[1];
-	*(MY_IP_info.pio_32_mmap + KEY2_BASE_PHYS) = key[2];
-	*(MY_IP_info.pio_32_mmap + KEY0_BASE_PHYS) = key[3];
-	
-
 	*(MY_IP_info.pio_32_mmap + PLAINTEXT0_BASE_PHYS) = plaintext[0];
 	*(MY_IP_info.pio_32_mmap + PLAINTEXT1_BASE_PHYS) = plaintext[1];
 	*(MY_IP_info.pio_32_mmap + PLAINTEXT2_BASE_PHYS) = plaintext[2];
 	*(MY_IP_info.pio_32_mmap + PLAINTEXT3_BASE_PHYS) = plaintext[3];
+
+	*(MY_IP_info.pio_32_mmap + KEY3_BASE_PHYS) = key[0];
+	*(MY_IP_info.pio_32_mmap + KEY1_BASE_PHYS) = key[1];
+	*(MY_IP_info.pio_32_mmap + KEY2_BASE_PHYS) = key[2];
+	*(MY_IP_info.pio_32_mmap + KEY0_BASE_PHYS) = key[3];
 			
-	
+	*(MY_IP_info.pio_32_mmap + START_BASE_PHYS) = 1;
 	
 	while(1){
-		if(*(MY_IP_info.pio_32_mmap + VALID_BASE_PHYS) != 1){
+		if(*(MY_IP_info.pio_32_mmap + VALID_BASE_PHYS) == 1){
 			printf("Done Encryption!\n");
 			break;
 		}
